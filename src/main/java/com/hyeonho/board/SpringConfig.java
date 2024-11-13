@@ -1,7 +1,7 @@
 package com.hyeonho.board;
 
-import com.hyeonho.board.repository.UserRepository;
-import com.hyeonho.board.service.UserService;
+import com.hyeonho.board.repository.MemberRepository;
+import com.hyeonho.board.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,16 +9,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SpringConfig {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     @Autowired
-    public SpringConfig(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public SpringConfig(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
     }
 
     @Bean
-    public UserService userService() {
-        return new UserService(userRepository);
+    public MemberService userService() {
+        return new MemberService(memberRepository);
     }
 
 }
