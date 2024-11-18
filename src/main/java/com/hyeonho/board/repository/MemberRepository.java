@@ -1,12 +1,11 @@
 package com.hyeonho.board.repository;
 
 
-import com.hyeonho.board.domain.Member;
+import com.hyeonho.board.domain.memver.Member;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 

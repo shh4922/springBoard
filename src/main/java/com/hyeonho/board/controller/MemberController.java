@@ -1,6 +1,6 @@
 package com.hyeonho.board.controller;
 
-import com.hyeonho.board.domain.Member;
+import com.hyeonho.board.domain.memver.Member;
 import com.hyeonho.board.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,11 +28,6 @@ public class MemberController {
     public Member findById(@PathVariable Long id) {
         System.out.println("run findById!");
         return memberService.findById(id);
-    }
-
-    @GetMapping("/test")
-    public String test() {
-        return "ㅎㅇㅎㅇ";
     }
 
 

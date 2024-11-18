@@ -1,6 +1,6 @@
 package com.hyeonho.board.service;
 
-import com.hyeonho.board.domain.Member;
+import com.hyeonho.board.domain.memver.Member;
 import com.hyeonho.board.domain.company.CompanyBoard;
 import com.hyeonho.board.domain.company.CompanyBoardDTO;
 import com.hyeonho.board.domain.company.CompanyCategory;

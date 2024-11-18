@@ -1,8 +1,7 @@
 package com.hyeonho.board.domain.company;
 
-import com.hyeonho.board.domain.Member;
+import com.hyeonho.board.domain.memver.Member;
 import jakarta.persistence.*;
-import jdk.jfr.Category;
 import lombok.Getter;
 import lombok.Setter;
 
