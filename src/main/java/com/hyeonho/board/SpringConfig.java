@@ -1,6 +1,7 @@
 package com.hyeonho.board;
 
 import com.hyeonho.board.repository.CompanyBoardRepo;
+import com.hyeonho.board.repository.CompanyCategoryRepo;
 import com.hyeonho.board.repository.MemberRepository;
 import com.hyeonho.board.service.CompanyBoardService;
 import com.hyeonho.board.service.MemberService;
@@ -13,11 +14,13 @@ public class SpringConfig {
 
     private final MemberRepository memberRepository;
     private final CompanyBoardRepo companyBoardRepo;
+    private final CompanyCategoryRepo companyCategoryRepo;
 
     @Autowired
-    public SpringConfig(MemberRepository memberRepository, CompanyBoardRepo companyBoardRepo) {
+    public SpringConfig(MemberRepository memberRepository, CompanyBoardRepo companyBoardRepo, CompanyCategoryRepo companyCategoryRepo) {
         this.memberRepository = memberRepository;
         this.companyBoardRepo = companyBoardRepo;
+        this.companyCategoryRepo = companyCategoryRepo;
     }
 
     @Bean
@@ -27,7 +30,7 @@ public class SpringConfig {
 
     @Bean
     public CompanyBoardService companyBoardService() {
-        return new CompanyBoardService(companyBoardRepo);
+        return new CompanyBoardService(companyBoardRepo, memberRepository, companyCategoryRepo);
     }
 
 }
