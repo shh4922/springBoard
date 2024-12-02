@@ -23,6 +23,18 @@ public class UsersService {
     }
 
     public Users register(Users users) {
-        return usersRepository.save(users);
+        try {
+            if(isEmailDuplicate(users.getEmail())) {
+                throw new IllegalArgumentException("사용중인 이메일");
+            }
+            return usersRepository.save(users);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public boolean isEmailDuplicate(String email) {
+        return usersRepository.findByEmail(email).isPresent();
     }
 }

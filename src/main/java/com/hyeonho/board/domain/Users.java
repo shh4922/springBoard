@@ -1,9 +1,12 @@
 package com.hyeonho.board.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
+@Getter
 public class Users {
 
     @Id

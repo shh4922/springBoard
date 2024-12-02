@@ -2,6 +2,7 @@ package com.hyeonho.board.controller;
 import com.hyeonho.board.domain.Users;
 import com.hyeonho.board.service.UsersService;
 import com.hyeonho.board.util.DefaultRes;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,9 +35,8 @@ public class UsersController {
         } catch (IllegalArgumentException e) {
             return DefaultRes.res(400, e.getMessage());
         } catch (Exception e) {
-            return DefaultRes.res(500, "회원가입도중 에러발생");
+            System.out.println(e);
+            return DefaultRes.res(500, e.getMessage());
         }
-
     }
-
 }
