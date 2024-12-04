@@ -15,6 +15,7 @@ public class UsersService {
 
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
+
     @Autowired
     public UsersService(UsersRepository usersRepository, PasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;
@@ -49,7 +50,7 @@ public class UsersService {
         Users user = usersRepository.findByEmail(email)
                 .orElseThrow(()-> new IllegalArgumentException("잘못된 email 입니다."));
         if(!passwordEncoder.matches(password, user.getPassword())) {
-            throw  new IllegalArgumentException("잘못된 email 입니다.");
+            throw  new IllegalArgumentException("잘못된 password 입니다.");
         }
 
         return user;

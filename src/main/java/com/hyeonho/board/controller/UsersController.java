@@ -28,7 +28,6 @@ public class UsersController {
         return usersList;
     }
 
-
     @PostMapping("/login")
     public DefaultRes<?> login(@RequestBody Map<String, Object> request) {
         try {
