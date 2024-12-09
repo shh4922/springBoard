@@ -1,0 +1,8 @@
+package com.hyeonho.board.repository;
+
+import com.hyeonho.board.domain.board.Post;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BoardRepository extends JpaRepository<Post, Long> {
+
+}
