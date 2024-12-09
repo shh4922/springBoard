@@ -21,6 +21,8 @@ public class SecurityConfig{
                         authorize -> authorize
                                 .requestMatchers("/api/v1/user/login").permitAll()
                                 .requestMatchers("/api/v1/user/register").permitAll()
+                                .requestMatchers("/api/v1/board/create").permitAll()
+                                .requestMatchers("/api/v1/board/posts").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();
