@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class PostRequestDTO {
 
-    private String writer;
+    private Long writer;
     private String title;
     private String content;
 }

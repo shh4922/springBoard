@@ -1,6 +1,7 @@
 package com.hyeonho.board.domain.board;
 
 
+import com.hyeonho.board.domain.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,10 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // postid
 
-    private String writer; // 작성자
+    // TODO: 이게뭐임?
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users writer; // 작성자
 
     private String title; // 제목
 

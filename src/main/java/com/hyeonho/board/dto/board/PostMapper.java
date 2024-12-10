@@ -1,6 +1,8 @@
 package com.hyeonho.board.dto.board;
 
+import com.hyeonho.board.domain.Users;
 import com.hyeonho.board.domain.board.Post;
+import com.hyeonho.board.repository.UsersRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,10 +12,16 @@ import java.util.stream.Collectors;
 @Component
 public class PostMapper {
 
+    private final UsersRepository userRepository;
+
+    public PostMapper(UsersRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     public PostResponseDTO toResponseDTO(Post post) {
         PostResponseDTO dto = new PostResponseDTO();
         dto.setId(post.getId());
-        dto.setWriter(post.getWriter());
+        dto.setWriter(post.getWriter().getName());
         dto.setTitle(post.getTitle());
         dto.setContent(post.getContent());
         dto.setCreateDate(post.getCreateDate());
@@ -34,7 +42,9 @@ public class PostMapper {
         Post post = new Post();
         post.setTitle(dto.getTitle());
         post.setContent(dto.getContent());
-        post.setWriter(dto.getWriter());
+        Users user = userRepository.findById(dto.getWriter())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + dto.getWriter()));
+        post.setWriter(user);
         return post;
     }
 }

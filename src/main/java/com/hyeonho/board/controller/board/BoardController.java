@@ -17,11 +17,14 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final UsersService usersService;
     private final PostMapper postMapper;
 
+
     @Autowired
-    public BoardController(BoardService boardService, UsersService usersService, PostMapper postMapper) {
+    public BoardController(BoardService boardService, UsersService usersService, UsersService usersService1, PostMapper postMapper) {
         this.boardService = boardService;
+        this.usersService = usersService1;
         this.postMapper = postMapper;
     }
 
@@ -34,8 +37,14 @@ public class BoardController {
 
     @PostMapping("/create")
     public DefaultRes<PostResponseDTO> createPost(@RequestBody PostRequestDTO requestDTO) {
-        Post post = postMapper.toEntity(requestDTO);
-        Post savedPost = boardService.savePost(post);
-        return DefaultRes.res(200,"게시글등록완료", postMapper.toResponseDTO(savedPost));
+        try {
+            Post post = postMapper.toEntity(requestDTO);
+            Post savedPost = boardService.savePost(post);
+            return DefaultRes.res(200,"게시글등록완료", postMapper.toResponseDTO(savedPost));
+        } catch (IllegalArgumentException e) {
+            return DefaultRes.res(401,"가입되지않은유저",null);
+        }
     }
+
+
 }

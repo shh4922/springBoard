@@ -59,4 +59,8 @@ public class UsersService {
     public boolean isEmailDuplicate(String email) {
         return usersRepository.findByEmail(email).isPresent();
     }
+
+    public boolean isTrueUser(Long id) {
+        return usersRepository.findById(id).isPresent();
+    }
 }
