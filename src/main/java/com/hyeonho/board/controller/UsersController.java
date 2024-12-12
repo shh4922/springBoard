@@ -1,5 +1,7 @@
 package com.hyeonho.board.controller;
+import com.hyeonho.board.auth.JwtTokenProvider;
 import com.hyeonho.board.domain.Users;
+import com.hyeonho.board.dto.user.LoginResponseDTO;
 import com.hyeonho.board.service.UsersService;
 import com.hyeonho.board.util.DefaultRes;
 import org.slf4j.Logger;
@@ -7,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,10 +18,12 @@ import java.util.Map;
 public class UsersController {
 
     private final UsersService usersService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public UsersController(UsersService usersService) {
+    public UsersController(UsersService usersService, JwtTokenProvider jwtTokenProvider) {
         this.usersService = usersService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
 
@@ -29,14 +34,21 @@ public class UsersController {
     }
 
     @PostMapping("/login")
-    public DefaultRes<?> login(@RequestBody Map<String, Object> request) {
+    public DefaultRes<LoginResponseDTO> login(@RequestBody Map<String, Object> request) {
         try {
             String email = (String) request.get("email");
             String password = (String) request.get("password");
+
             if(email == null || password == null) {
                 return DefaultRes.res(400, "email|password 비었음");
             }
-            return DefaultRes.res(200,"로그인성공",usersService.login(email,password));
+
+            LoginResponseDTO user = usersService.login(email,password);
+            if(user == null) {
+                return DefaultRes.res(400,"잘못된 아이디 혹은 비번", null);
+            }
+
+            return DefaultRes.res(200,"로그인성공",user);
         } catch (IllegalArgumentException e) {
             return DefaultRes.res(400, e.getMessage());
         }

@@ -1,6 +1,9 @@
 package com.hyeonho.board.service;
 
+import com.hyeonho.board.auth.JwtTokenProvider;
+import com.hyeonho.board.auth.RefreshToken;
 import com.hyeonho.board.domain.Users;
+import com.hyeonho.board.dto.user.LoginResponseDTO;
 import com.hyeonho.board.repository.UsersRepository;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +18,13 @@ public class UsersService {
 
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public UsersService(UsersRepository usersRepository, PasswordEncoder passwordEncoder) {
+    public UsersService(UsersRepository usersRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
         this.usersRepository = usersRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
 
@@ -46,14 +51,23 @@ public class UsersService {
         }
     }
 
-    public Users login(String email, String password) {
+    public LoginResponseDTO login(String email, String password) {
         Users user = usersRepository.findByEmail(email)
                 .orElseThrow(()-> new IllegalArgumentException("잘못된 email 입니다."));
-        if(!passwordEncoder.matches(password, user.getPassword())) {
-            throw  new IllegalArgumentException("잘못된 password 입니다.");
+
+        if(!passwordEncoder.matches(password,user.getPassword())) {
+            throw new IllegalArgumentException("잘못된 password 입니다.");
         }
 
-        return user;
+        String accessToken = jwtTokenProvider.generateAccessToken(email);
+//        RefreshToken.removeUserRefreshToken(user.getUser_id());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(email);
+
+        LoginResponseDTO res = new LoginResponseDTO();
+        res.setAcessToken(accessToken);
+        res.setRefreshToken(refreshToken);
+
+        return res;
     }
 
     public boolean isEmailDuplicate(String email) {
@@ -62,5 +76,9 @@ public class UsersService {
 
     public boolean isTrueUser(Long id) {
         return usersRepository.findById(id).isPresent();
+    }
+
+    public Users findByEmail(String email) {
+        return usersRepository.findByEmail(email).get();
     }
 }
