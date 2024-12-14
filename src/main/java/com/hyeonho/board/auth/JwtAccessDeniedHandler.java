@@ -17,22 +17,9 @@ import java.util.HashMap;
 @Slf4j
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
-
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        log.info("[CustomAuthenticationEntryPointHandler] :: {}", "s?!");
-        log.info("[CustomAuthenticationEntryPointHandler] :: {}", request.getRequestURL());
-        log.info("[CustomAuthenticationEntryPointHandler] :: 토근 정보가 만료되었거나 존재하지 않음");
-
-        response.setStatus(401);
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json; charset=UTF-8");
-
-        HashMap<String, String> returnJson = new HashMap<>();
-        returnJson.put("errorCode2", "401");
-        returnJson.put("errorMsg2", "권한없음ㅋㅋ");
-
-        PrintWriter out = response.getWriter();
-        out.print(returnJson);
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
+        //필요한 권한이 없이 접근하려 할때 403
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 }

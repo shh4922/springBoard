@@ -1,62 +1,50 @@
 package com.hyeonho.board.auth;
 
-import com.hyeonho.board.domain.Users;
-import com.hyeonho.board.service.UsersService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-import java.util.Collections;
 
+@RequiredArgsConstructor
 @Component
-//@RequiredArgsConstructor
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends GenericFilterBean {
 
+    public static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+    public static final String AUTHORIZATION_HEADER = "Authorization";
     private final JwtTokenProvider jwtTokenProvider;
-    private final UsersService usersService;
-
-    @Autowired
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UsersService usersService) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.usersService = usersService;
-    }
-
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader("Authorization");
-        String username = null;
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+        String jwt = getTokenFromHeader(httpServletRequest);
+        String requestURI = httpServletRequest.getRequestURI();
 
-        if(token != null && !token.isEmpty()) {
-            String jwtToken = token.substring(7);
-            username = jwtTokenProvider.getUsernameFromToken(token);
+        if(StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+            Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            logger.debug("Security Context에 '{}' 인증정보 저장했음, uri:{}",authentication.getName(),requestURI);
+        } else {
+            logger.debug("토큰 없음 uri:{}",requestURI);
         }
-
-
-
-
-        if(username != null && !username.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = usersService.loadUserByEmail(username);
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        }
-
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(servletRequest,servletResponse);
     }
 
+    // Request Header 에서 토큰 정보를 꺼내오기 위한 메소드
+    private String getTokenFromHeader(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
 
+        return null;
+    }
 }

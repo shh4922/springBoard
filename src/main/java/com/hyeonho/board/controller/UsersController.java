@@ -36,6 +36,7 @@ public class UsersController {
     @PostMapping("/login")
     public DefaultRes<LoginResponseDTO> login(@RequestBody Map<String, Object> request) {
         try {
+            System.out.println(request);
             String email = (String) request.get("email");
             String password = (String) request.get("password");
 

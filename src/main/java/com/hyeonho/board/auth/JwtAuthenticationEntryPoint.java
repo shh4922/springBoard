@@ -16,20 +16,10 @@ import java.util.HashMap;
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        log.info("[CustomAuthenticationEntryPointHandler] :: {}", authException.getMessage());
-        log.info("[CustomAuthenticationEntryPointHandler] :: {}", request.getRequestURL());
-        log.info("[CustomAuthenticationEntryPointHandler] :: 토근 정보가 만료되었거나 존재하지 않음");
-
-        response.setStatus(401);
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json; charset=UTF-8");
-
-        HashMap<String, String> returnJson = new HashMap<>();
-        returnJson.put("errorCode", "401");
-        returnJson.put("errorMsg", "권한없음ㅋㅋ");
-
-        PrintWriter out = response.getWriter();
-        out.print(returnJson);
+    public void commence(HttpServletRequest request,
+                         HttpServletResponse response,
+                         AuthenticationException authException) throws IOException {
+        // 유효한 자격증명을 제공하지 않고 접근하려 할때 401
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }
