@@ -1,5 +1,7 @@
 package com.hyeonho.board.auth;
 
+import com.hyeonho.board.domain.Users;
+import com.hyeonho.board.service.UsersService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,12 +23,12 @@ import java.util.Collections;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final AuthService authService;
+    private final UsersService usersService;
 
     @Autowired
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, AuthService authService) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UsersService usersService) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.authService = authService;
+        this.usersService = usersService;
     }
 
 
@@ -39,12 +42,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             username = jwtTokenProvider.getUsernameFromToken(token);
         }
 
+
+
+
         if(username != null && !username.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
-            SecurityContextHolder.getContext().setAuthentication(authService.getUserAuth(username));
+            UserDetails userDetails = usersService.loadUserByEmail(username);
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
 
         filterChain.doFilter(request,response);
-
     }
 
 

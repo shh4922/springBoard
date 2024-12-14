@@ -1,17 +1,15 @@
 package com.hyeonho.board.service;
 
 import com.hyeonho.board.auth.JwtTokenProvider;
-import com.hyeonho.board.auth.RefreshToken;
 import com.hyeonho.board.domain.Users;
 import com.hyeonho.board.dto.user.LoginResponseDTO;
 import com.hyeonho.board.repository.UsersRepository;
-import org.apache.catalina.User;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class UsersService {
@@ -70,6 +68,7 @@ public class UsersService {
         return res;
     }
 
+
     public boolean isEmailDuplicate(String email) {
         return usersRepository.findByEmail(email).isPresent();
     }
@@ -79,6 +78,12 @@ public class UsersService {
     }
 
     public Users findByEmail(String email) {
-        return usersRepository.findByEmail(email).get();
+        return usersRepository.findByEmail(email)
+                .orElseThrow(()-> new IllegalArgumentException("그런 이메일 하는애 없음ㅋㅋ"));
+    }
+
+    public UserDetails loadUserByEmail(String email) {
+        return (UserDetails) usersRepository.findByEmail(email)
+                .orElseThrow(()-> new IllegalArgumentException("그런 이메일 하는애 없음ㅋㅋ"));
     }
 }
